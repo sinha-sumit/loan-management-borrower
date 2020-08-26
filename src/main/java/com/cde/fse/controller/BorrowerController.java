@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,6 +26,7 @@ import com.cde.fse.service.BorrowerService;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 @RestController
+@RequestMapping("/borrower/V1")
 public class BorrowerController {
 
 	private static final Logger log = LoggerFactory.getLogger(BorrowerController.class);
@@ -37,25 +39,17 @@ public class BorrowerController {
 
 	@GetMapping("/search")
 	public ResponseEntity<Borrower> searchBorrowers(@Param("keyword") String keyword) throws Exception {
+		
 		log.info("::::::::::::::::: Inside searchBorrowers method of Controller :::::::::::::::::::");
-		return new ResponseEntity(borrowerService.listAll(keyword), HttpStatus.OK);
+		
+		return new ResponseEntity(borrowerService.getBorrowerDetails(keyword), HttpStatus.OK);
 	}
-
-	@GetMapping("/borrower")
-	public List<Borrower> getAllBorrowers() {
-		log.info("::::::::::::::::: Inside getAllBorrowers method of Controller :::::::::::::::::::");
-		return borrowerService.getAllBorrowers();
-	}
-
-	@GetMapping("/borrower/{borrower_id}")
-	public Borrower getBorrowersById(@PathVariable("borrower_id") int borrower_id) {
-		log.info("::::::::::::::::: Inside getBorrowersById method of Controller :::::::::::::::::::");
-		return borrowerService.getBorrowerById(borrower_id);
-	}
-
+	
 	@PostMapping("/save")
 	public Borrower saveBorrower(@RequestBody Borrower borrowers) throws Exception {
+		
 		log.info("::::::::::::::::: Inside saveOrUpdate method of Controller :::::::::::::::::::");
+		
 		Borrower borrower = borrowerService.saveOrUpdate(borrowers);
 
 		if (borrower == null)
@@ -63,14 +57,16 @@ public class BorrowerController {
 
 		return borrower;
 	}
-
-	// creating put mapping that updates the borrower detail
+	
 	@PutMapping("/update/{id}")
 	public ResponseEntity<Borrower> update(@PathVariable Integer id, @RequestBody Borrower borrower) throws Exception {
+		
 		log.info("::::::::::::::::: Inside saveOrUpdate method of Controller :::::::::::::::::::");
+		
 		return new ResponseEntity(borrowerService.update(id, borrower), HttpStatus.OK);
 	}
 	
+		
 	@HystrixCommand(fallbackMethod = "callLoanManagementBorrowerApi_Fallback")
     public String callLoanManagementBorrowerApi(String borrowername) {
  

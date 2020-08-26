@@ -3,7 +3,6 @@ package com.cde.fse.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +21,10 @@ public class BorrowerService {
 	@Autowired
 	private BorrowerRepository repository;
 	
-	public Optional<Borrower> listAll(String keyword) {
+	public List<Borrower> getBorrowerDetails(String keyword) {
 
-		Optional<Borrower> borrower = repository.search(keyword);
-		if(!borrower.isPresent()) {
+		List<Borrower> borrower = repository.search(keyword);
+		if(borrower==null) {
 			throw new LoginCustomException(new Date(), "Search Not Found", "Please try with other keyword");
 		}
         return borrower;
